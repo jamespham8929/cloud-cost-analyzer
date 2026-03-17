@@ -38,6 +38,11 @@ class CostAnalyzer:
     def get_unused_resources(self) -> list[UnusedResourceFinding]:
         return self._unused_scanner.scan()
 
+    def get_savings_plans_recommendations(self, lookback_days: int = 30):
+        from .savings_plans import SavingsPlansAnalyzer
+
+        return SavingsPlansAnalyzer(self._ce).get_recommendations(lookback_days)
+
     def get_savings_plans_coverage(self, period_days: int = 30) -> dict[str, Any]:
         from datetime import datetime, timedelta, timezone
 
