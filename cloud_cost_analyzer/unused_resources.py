@@ -111,7 +111,6 @@ class UnusedResourceScanner:
         for page in paginator.paginate(Filters=[{"Name": "instance-state-name", "Values": ["stopped"]}]):
             for reservation in page["Reservations"]:
                 for inst in reservation["Instances"]:
-                    state_reason = inst.get("StateTransitionReason", "")
                     name = next(
                         (t["Value"] for t in inst.get("Tags", []) if t["Key"] == "Name"),
                         inst["InstanceId"],

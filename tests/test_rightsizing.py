@@ -1,16 +1,8 @@
 """Tests for the EC2 rightsizing analyzer."""
 
-from unittest.mock import MagicMock, patch
-from datetime import datetime, timezone
+from unittest.mock import MagicMock
 
-import pytest
-
-from cloud_cost_analyzer.ec2_rightsizing import (
-    EC2RightsizingAnalyzer,
-    RightsizingFinding,
-    CPU_LOW_THRESHOLD,
-    CPU_PEAK_THRESHOLD,
-)
+from cloud_cost_analyzer.ec2_rightsizing import EC2RightsizingAnalyzer
 
 
 def make_analyzer():

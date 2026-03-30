@@ -1,6 +1,6 @@
 """Tests for the CloudWatch fetch and profile builder, against a mocked client."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from unittest.mock import MagicMock
 
 from cloud_cost_analyzer.cloudwatch import fetch_utilization_samples, profile_instance

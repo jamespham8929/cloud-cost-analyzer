@@ -5,11 +5,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    import mypy_boto3_cloudwatch as CloudWatchClient
-    import mypy_boto3_ec2 as EC2Client
 
 # Ordered from smallest to largest within each family for downsize lookups
 INSTANCE_FAMILY_LADDER: dict[str, list[str]] = {

@@ -3,8 +3,6 @@
 from unittest.mock import MagicMock
 from datetime import datetime, timedelta, timezone
 
-import pytest
-
 from cloud_cost_analyzer.unused_resources import UnusedResourceScanner, ResourceType
 
 
