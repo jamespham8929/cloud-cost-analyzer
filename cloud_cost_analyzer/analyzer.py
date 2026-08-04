@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-import boto3
 from dataclasses import dataclass, field
 from typing import Any
 
+import boto3
+
 from .ec2_rightsizing import EC2RightsizingAnalyzer, RightsizingFinding
-from .unused_resources import UnusedResourceScanner, UnusedResourceFinding
+from .unused_resources import UnusedResourceFinding, UnusedResourceScanner
 
 
 @dataclass

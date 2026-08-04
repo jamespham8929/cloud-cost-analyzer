@@ -97,14 +97,14 @@ class EC2RightsizingAnalyzer:
         end_time = datetime.now(tz=timezone.utc)
         start_time = end_time - timedelta(days=lookback_days)
 
-        common = dict(
-            Namespace="AWS/EC2",
-            MetricName="CPUUtilization",
-            Dimensions=[{"Name": "InstanceId", "Value": instance_id}],
-            StartTime=start_time,
-            EndTime=end_time,
-            Period=3600,
-        )
+        common = {
+            "Namespace": "AWS/EC2",
+            "MetricName": "CPUUtilization",
+            "Dimensions": [{"Name": "InstanceId", "Value": instance_id}],
+            "StartTime": start_time,
+            "EndTime": end_time,
+            "Period": 3600,
+        }
 
         avg_resp = self._cw.get_metric_statistics(**common, Statistics=["Average"])
         peak_resp = self._cw.get_metric_statistics(**common, Statistics=["Maximum"])

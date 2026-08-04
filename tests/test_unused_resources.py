@@ -1,9 +1,9 @@
 """Tests for unused resource detection."""
 
-from unittest.mock import MagicMock
 from datetime import datetime, timedelta, timezone
+from unittest.mock import MagicMock
 
-from cloud_cost_analyzer.unused_resources import UnusedResourceScanner, ResourceType
+from cloud_cost_analyzer.unused_resources import ResourceType, UnusedResourceScanner
 
 
 def make_scanner():

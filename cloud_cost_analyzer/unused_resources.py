@@ -49,7 +49,7 @@ class UnusedResourceScanner:
 
                 size_gb = vol["Size"]
                 vol_type = vol.get("VolumeType", "gp2")
-                cost_per_gb = 0.10 if vol_type == "gp3" else 0.10
+                cost_per_gb = 0.10
                 monthly_cost = size_gb * cost_per_gb
 
                 findings.append(UnusedResourceFinding(
