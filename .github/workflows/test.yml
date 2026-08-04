@@ -27,7 +27,7 @@ jobs:
           pip install pytest pytest-mock pytest-cov
 
       - name: Run tests
-        run: pytest tests/ -v --cov=cloud_cost_analyzer --cov-report=term-missing
+        run: pytest tests/ -v --cov=cloud_cost_analyzer --cov-report=term-missing --cov-fail-under=55
 
   lint:
     name: Lint
