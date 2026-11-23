@@ -27,7 +27,7 @@ class TestUnattachedVolumes:
         assert len(findings) == 1
         assert findings[0].resource_id == "vol-001"
         assert findings[0].resource_type == ResourceType.EBS_VOLUME
-        assert findings[0].monthly_cost == 10.0  # 100 GB * $0.10
+        assert findings[0].monthly_cost == 8.0  # 100 GB gp3 at $0.08
 
     def test_no_findings_when_no_available_volumes(self):
         scanner, ec2 = make_scanner()

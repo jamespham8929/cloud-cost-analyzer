@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 
+from .pricing import PUBLIC_IPV4_MONTHLY, SNAPSHOT_PER_GB_MONTH, ebs_monthly_cost
+
 
 class ResourceType(str, Enum):
     EBS_VOLUME = "EBS Volume"
@@ -49,8 +51,9 @@ class UnusedResourceScanner:
 
                 size_gb = vol["Size"]
                 vol_type = vol.get("VolumeType", "gp2")
-                cost_per_gb = 0.10
-                monthly_cost = size_gb * cost_per_gb
+                monthly_cost = ebs_monthly_cost(
+                    vol_type, size_gb, vol.get("Iops"), vol.get("Throughput")
+                )
 
                 findings.append(UnusedResourceFinding(
                     resource_id=vol["VolumeId"],
@@ -72,7 +75,7 @@ class UnusedResourceScanner:
                 resource_id=addr["AllocationId"],
                 resource_type=ResourceType.ELASTIC_IP,
                 description=f"Elastic IP {addr.get('PublicIp', '')} not associated",
-                monthly_cost=3.65,
+                monthly_cost=round(PUBLIC_IPV4_MONTHLY, 2),
                 region=self._region,
                 days_unused=0,
             ))
@@ -93,7 +96,7 @@ class UnusedResourceScanner:
 
                 age_days = (datetime.now(tz=timezone.utc) - start_time).days
                 size_gb = snap.get("VolumeSize", 0)
-                monthly_cost = size_gb * 0.05
+                monthly_cost = round(size_gb * SNAPSHOT_PER_GB_MONTH, 2)
 
                 findings.append(UnusedResourceFinding(
                     resource_id=snap["SnapshotId"],
