@@ -12,11 +12,11 @@ pip install pytest pytest-mock pytest-cov ruff==0.16.1
 
 ## Tests
 
-Run the suite with coverage. CI enforces a 55% floor, so new code should keep the
+Run the suite with coverage. CI enforces a 90% floor, so new code should keep the
 total at or above that.
 
 ```bash
-pytest tests/ -v --cov=cloud_cost_analyzer --cov-report=term-missing --cov-fail-under=55
+pytest tests/ -v --cov=cloud_cost_analyzer --cov-report=term-missing --cov-fail-under=90
 ```
 
 The core modeling modules (`workload.py`, `confidence.py`,
