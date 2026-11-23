@@ -8,6 +8,7 @@ from typing import Any
 import boto3
 
 from .ec2_rightsizing import EC2RightsizingAnalyzer, RightsizingFinding
+from .savings_plans import SavingsPlansAnalyzer, coverage_pct
 from .unused_resources import UnusedResourceFinding, UnusedResourceScanner
 
 
@@ -40,46 +41,25 @@ class CostAnalyzer:
         return self._unused_scanner.scan()
 
     def get_savings_plans_recommendations(self, lookback_days: int = 30):
-        from .savings_plans import SavingsPlansAnalyzer
-
         return SavingsPlansAnalyzer(self._ce).get_recommendations(lookback_days)
 
     def get_savings_plans_coverage(self, period_days: int = 30) -> dict[str, Any]:
-        from datetime import datetime, timedelta, timezone
+        sums = SavingsPlansAnalyzer(self._ce).coverage_sums("SERVICE", period_days)
 
-        end = datetime.now(tz=timezone.utc).date()
-        start = end - timedelta(days=period_days)
-
-        response = self._ce.get_savings_plans_coverage(
-            TimePeriod={"Start": str(start), "End": str(end)},
-            Granularity="MONTHLY",
-            GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}],
-        )
-
-        total_on_demand = 0.0
-        total_covered = 0.0
-        by_service: dict[str, dict] = {}
-
-        for period in response.get("SavingsPlansCoverages", []):
-            for group in period.get("Groups", []):
-                service = group["Attributes"].get("SERVICE", "Unknown")
-                cov = group["Coverage"]
-                on_demand = float(cov.get("OnDemandCost", "0"))
-                covered = float(cov.get("CoveredUsage", "0")) * on_demand  # approx
-                pct = float(cov.get("CoveragePercentage", "0"))
-
-                total_on_demand += on_demand
-                total_covered += covered
-                by_service[service] = {
-                    "on_demand_cost": round(on_demand, 2),
-                    "coverage_pct": round(pct, 1),
-                }
-
-        overall_pct = (total_covered / total_on_demand * 100) if total_on_demand > 0 else 0.0
+        by_service = {
+            service: {
+                "on_demand_cost": round(e["on_demand"], 2),
+                "coverage_pct": round(coverage_pct(e["covered"], e["on_demand"]), 1),
+            }
+            for service, e in sums.items()
+        }
+        total_on_demand = sum(e["on_demand"] for e in sums.values())
+        total_covered = sum(e["covered"] for e in sums.values())
 
         return {
             "period_days": period_days,
             "total_on_demand_spend": round(total_on_demand, 2),
-            "overall_coverage_pct": round(overall_pct, 1),
+            "total_covered_spend": round(total_covered, 2),
+            "overall_coverage_pct": round(coverage_pct(total_covered, total_on_demand), 1),
             "by_service": by_service,
         }

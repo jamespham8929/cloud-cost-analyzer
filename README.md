@@ -93,6 +93,7 @@ cloud_cost_analyzer/
   cloudwatch.py            pages the CPU series and builds a profile
   ec2_rightsizing.py       the legacy average-based analyzer, kept for comparison
   unused_resources.py      unattached EBS, idle EIPs, old snapshots
+  pricing.py               EBS, snapshot, and IPv4 prices in one table
   savings_plans.py         coverage and purchase recommendations
 docs/adr/                  why recurring peak, why confidence scoring
 benchmarks/                naive vs temporal, reproducible
@@ -109,13 +110,19 @@ The core modeling (`workload.py`, `confidence.py`, `temporal_rightsizing.py`) ha
 no AWS dependency and is fully unit tested. The CloudWatch fetch takes a client as
 an argument so it can be tested with a mock.
 
+The Cost Explorer and EC2 tests use botocore's `Stubber`. It checks each request
+and each canned response against the real AWS API model. A plain mock accepts
+any field name, and that hid three bugs here: an invalid lookback value, and
+coverage and recommendation parsers that read fields the API does not return.
+
 ## Limitations
 
 - Hour-of-day bucketing assumes a daily cycle. A workload whose pattern is weekly
   (a Monday batch job) is captured only at the resolution of its daily footprint.
   Day-of-week bucketing is a natural extension.
 - Cost figures are approximate on-demand us-east-1 Linux prices, kept in a static
-  table. They are good enough to rank recommendations, not to quote a bill.
+  table. They are good enough to rank recommendations, not to quote a bill. EBS
+  volumes are priced by type, with provisioned IOPS and throughput included.
 - Memory and network are not yet modeled. CPU is the most common rightsizing
   constraint but not the only one.
 

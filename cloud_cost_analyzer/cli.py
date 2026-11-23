@@ -149,12 +149,13 @@ def coverage(ctx, period, recommend):
             console.print("[green]No Savings Plans purchase recommendations.[/green]")
             return
         table = Table(show_header=True, header_style="bold")
-        for col in ("Commitment", "Term", "Payment", "$/hr", "Est. savings/mo"):
+        for col in ("Commitment", "Term", "Payment", "$/hr", "Est. savings/mo", "Utilization"):
             table.add_column(col)
         for r in recs:
             table.add_row(
                 r.commitment_type, r.term, r.payment_option,
                 f"${r.hourly_commitment:.2f}", f"${r.estimated_monthly_savings:.0f}",
+                f"{r.estimated_utilization_pct:.0f}%",
             )
         console.print(table)
 
